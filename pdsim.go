@@ -5,11 +5,20 @@
 package main
 
 import (
+    "flag"
     "fmt"
     "log"
     "github.com/mdunthorn/pdsim/proto/eis"
     "net"
+    "os"
 )
+
+var start_port int
+var num_servers int
+func init() {
+    flag.IntVar(&start_port, "start_port", 2001, "start port")
+    flag.IntVar(&num_servers, "num_servers", 1, "number of servers")
+}
 
 func start_listener(port int) {
     lstr := fmt.Sprintf(":%d", port)
@@ -30,8 +39,13 @@ func start_listener(port int) {
 }
 
 func main() {
+    flag.Parse()
     log.Print("start program")
-    go start_listener(2001)
-    go start_listener(2002)
-    start_listener(2003)
+    log.Printf("start_port: %d, num_servers: %d", start_port, num_servers)
+    for i := 0; i < num_servers; i++ {
+        port := start_port + i
+        go start_listener(port)
+    }
+    port := start_port + num_servers
+    start_listener(port)
 }
