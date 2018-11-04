@@ -7,6 +7,7 @@ import (
 	"io"
     "log"
 	"net"
+    "time"
 )
 
 func Handle(c net.Conn) {
@@ -36,10 +37,15 @@ func Handle(c net.Conn) {
             break
         }
         send_volume(c)
+        time.Sleep(10 * time.Millisecond)
         send_occupancy(c)
+        time.Sleep(10 * time.Millisecond)
         send_vol_med_1(c)
+        time.Sleep(10 * time.Millisecond)
         send_vol_xlong(c)
+        time.Sleep(10 * time.Millisecond)
         send_speed(c)
+        time.Sleep(10 * time.Millisecond)
     }
     log.Printf("stop handling a connection from %s", c.RemoteAddr().String())
 }

@@ -9,7 +9,7 @@ import (
     "fmt"
     "html"
     "log"
-    // "github.com/gorilla/mux"
+    "github.com/gorilla/mux"
     "github.com/mdunthorn/pdsim/proto/eis"
     "net"
     "net/http"
@@ -40,6 +40,14 @@ func start_listener(port int) {
 	}
 }
 
+func detectorHandler(w http.ResponseWriter, r *http.Request) {
+        log.Printf("api got a request for %q", html.EscapeString(r.URL.Path))
+        vars := mux.Vars(r)
+        port := vars["port"]
+        log.Printf("port: %s", port)
+	    fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
+}
+
 func main() {
     log.Print("start program")
 
@@ -53,15 +61,10 @@ func main() {
         go start_listener(port)
     }
 
-    // Set up an api router
-    http.HandleFunc("/bar", func(w http.ResponseWriter, r *http.Request) {
-        log.Printf("api got a request for %q", html.EscapeString(r.URL.Path))
-	    fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
-    })
-    // r := mux.NewRouter()
-    // http:.Handle("/", r)
-
     // Start the api server
+    r := mux.NewRouter()
+    r.HandleFunc("/detectors/{port:[0-9]+}", detectorHandler)
+    http.Handle("/", r)
     log.Printf("starting api server on port %d", 8080)
     log.Fatal(http.ListenAndServe(":8080", nil))
 }
